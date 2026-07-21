@@ -3,426 +3,499 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FirmGen 사업 기획서</title>
+<title>FirmGen — 요구사항을 넣으면 펌웨어가 나옵니다</title>
+<meta name="description" content="자연어 요구사항으로 STM32 펌웨어 프로젝트를 자동 개발. 핀 설계부터 검증까지. 온프레미스로 소스코드 유출 없이.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
-    --paper: #F5F8F7;
+    --primary: #2563EB;
+    --on-primary: #FFFFFF;
+    --secondary: #3B82F6;
+    --accent: #EA580C;
+    --bg: #F8FAFC;
+    --fg: #1E293B;
+    --sub: #64748B;
+    --muted: #E9EFF8;
+    --border: #E2E8F0;
     --card: #FFFFFF;
-    --ink: #10201D;
-    --sub: #556763;
-    --line: #DCE5E3;
-    --teal: #0E7A6F;
-    --teal-strong: #0A5F57;
-    --teal-soft: #E2F0EE;
-    --amber: #C4690B;
-    --amber-soft: #F8ECDD;
-    --code-bg: #0F2320;
-    --code-ink: #C9E5E0;
+    --terminal-bg: #0F172A;
+    --terminal-fg: #E2E8F0;
+    --ok: #16A34A;
+    --shadow: 0 1px 3px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.07);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --paper: #0C1614;
-      --card: #12201D;
-      --ink: #E7F0EE;
-      --sub: #93A6A2;
-      --line: #243632;
-      --teal: #35C7B4;
-      --teal-strong: #6ADCCB;
-      --teal-soft: #143430;
-      --amber: #E9A955;
-      --amber-soft: #33270F;
-      --code-bg: #0A1B18;
-      --code-ink: #B9DCD6;
+      --primary: #60A5FA;
+      --on-primary: #0B1220;
+      --secondary: #3B82F6;
+      --accent: #FB923C;
+      --bg: #0B1220;
+      --fg: #E2E8F0;
+      --sub: #94A3B8;
+      --muted: #16233B;
+      --border: #24324D;
+      --card: #101B30;
+      --terminal-bg: #060C18;
+      --terminal-fg: #CBD5E1;
+      --ok: #4ADE80;
+      --shadow: 0 1px 3px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
     }
-  }
-  :root[data-theme="dark"] {
-    --paper: #0C1614;
-    --card: #12201D;
-    --ink: #E7F0EE;
-    --sub: #93A6A2;
-    --line: #243632;
-    --teal: #35C7B4;
-    --teal-strong: #6ADCCB;
-    --teal-soft: #143430;
-    --amber: #E9A955;
-    --amber-soft: #33270F;
-    --code-bg: #0A1B18;
-    --code-ink: #B9DCD6;
-  }
-  :root[data-theme="light"] {
-    --paper: #F5F8F7;
-    --card: #FFFFFF;
-    --ink: #10201D;
-    --sub: #556763;
-    --line: #DCE5E3;
-    --teal: #0E7A6F;
-    --teal-strong: #0A5F57;
-    --teal-soft: #E2F0EE;
-    --amber: #C4690B;
-    --amber-soft: #F8ECDD;
-    --code-bg: #0F2320;
-    --code-ink: #C9E5E0;
   }
 
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
-    font-size: 16px;
-    line-height: 1.72;
-    -webkit-font-smoothing: antialiased;
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: "Plus Jakarta Sans", "Pretendard Variable", Pretendard, -apple-system, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px 96px; }
-
-  /* ---------- cover ---------- */
-  .cover { padding: 88px 0 56px; border-bottom: 1px solid var(--line); }
-  .cover .doc-meta {
-    display: flex; gap: 20px; flex-wrap: wrap;
-    font-size: 13px; font-weight: 500; color: var(--sub);
-    letter-spacing: .08em; text-transform: uppercase;
-    margin-bottom: 40px;
-  }
-  .cover .doc-meta strong { color: var(--teal); font-weight: 700; }
-  .cover h1 {
-    font-size: clamp(34px, 5.4vw, 52px);
-    font-weight: 800; letter-spacing: -0.035em; line-height: 1.18;
-    margin: 0 0 20px; text-wrap: balance;
-  }
-  .cover h1 .accent { color: var(--teal); }
-  .cover .tagline { font-size: 19px; color: var(--sub); max-width: 40em; margin: 0 0 44px; text-wrap: balance; }
-  .cover .facts {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
-  }
-  .cover .facts div { background: var(--card); padding: 14px 18px; }
-  .cover .facts dt { font-size: 12px; font-weight: 600; color: var(--sub); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
-  .cover .facts dd { margin: 0; font-size: 15px; font-weight: 600; }
-
-  /* ---------- sections ---------- */
-  section { padding-top: 64px; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  a { color: inherit; }
+  h1,h2,h3 { letter-spacing: -0.02em; text-wrap: balance; }
+  section { padding: 88px 0; }
   .eyebrow {
-    display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px;
+    display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--primary); margin-bottom: 12px;
   }
-  .eyebrow .no {
-    font-size: 13px; font-weight: 800; color: var(--teal);
-    letter-spacing: .04em; font-variant-numeric: tabular-nums;
-  }
-  .eyebrow .rule { flex: 1; height: 1px; background: var(--line); align-self: center; }
-  h2 { font-size: 27px; font-weight: 800; letter-spacing: -0.025em; margin: 0 0 18px; }
-  h3 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; margin: 28px 0 10px; }
-  p { margin: 0 0 14px; max-width: 46em; }
-  .lead { font-size: 17.5px; }
-  ul { margin: 0 0 14px; padding-left: 22px; }
-  li { margin-bottom: 6px; }
-  strong { font-weight: 700; }
-  .hl { color: var(--teal-strong); font-weight: 700; }
-  .warn { color: var(--amber); font-weight: 700; }
-  .muted { color: var(--sub); font-size: 14px; }
+  .section-title { font-size: clamp(26px, 3.6vw, 38px); font-weight: 800; margin: 0 0 14px; }
+  .section-sub { color: var(--sub); font-size: 17px; max-width: 42em; margin: 0 0 44px; }
 
-  /* ---------- callout ---------- */
-  .callout {
-    background: var(--teal-soft); border-left: 3px solid var(--teal);
-    border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 20px 0;
+  /* nav */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
   }
-  .callout p { margin: 0; }
-  .callout.amber { background: var(--amber-soft); border-left-color: var(--amber); }
+  .nav-inner { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .logo { font-weight: 800; font-size: 19px; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .logo svg { color: var(--primary); }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; }
+  .nav-links a { text-decoration: none; font-size: 14.5px; font-weight: 600; color: var(--sub); transition: color .2s; }
+  .nav-links a:hover, .nav-links a:focus-visible { color: var(--fg); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    font-weight: 700; font-size: 15px; text-decoration: none;
+    padding: 12px 22px; border-radius: 10px; border: none;
+    min-height: 44px; transition: transform .15s ease-out, box-shadow .2s, background .2s;
+  }
+  .btn:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-accent:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(234,88,12,.35); }
+  .btn-ghost { background: transparent; color: var(--fg); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .nav .btn { padding: 9px 18px; min-height: 40px; font-size: 14px; }
+  @media (max-width: 820px) { .nav-links { display: none; } }
 
-  /* ---------- funnel diagram ---------- */
-  .funnel { display: flex; flex-direction: column; gap: 0; margin: 24px 0; }
-  .funnel .step {
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-    padding: 16px 20px; display: flex; gap: 16px; align-items: flex-start;
-  }
-  .funnel .arrow {
-    text-align: center; color: var(--teal); font-weight: 800; font-size: 15px;
-    padding: 4px 0;
-  }
-  .funnel .badge {
-    flex-shrink: 0; margin-top: 3px;
-    font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
-    color: var(--teal); background: var(--teal-soft);
-    padding: 3px 10px; border-radius: 999px; white-space: nowrap;
-  }
-  .funnel .step.money { border-color: var(--teal); }
-  .funnel .step.money .badge { color: var(--card); background: var(--teal); }
-  .funnel .step p { margin: 0; font-size: 15px; }
-  .funnel .step .t { font-weight: 700; font-size: 16px; margin-bottom: 2px; }
+  /* hero */
+  .hero { padding: 88px 0 72px; }
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  @media (max-width: 960px) { .hero-grid { grid-template-columns: 1fr; } }
+  .hero h1 { font-size: clamp(32px, 4.6vw, 50px); font-weight: 800; line-height: 1.16; margin: 0 0 20px; }
+  .hero h1 .u { color: var(--primary); }
+  .hero p.lede { font-size: 18.5px; color: var(--sub); margin: 0 0 32px; max-width: 34em; }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 28px; }
+  .hero-note { font-size: 13.5px; color: var(--sub); display: flex; align-items: center; gap: 8px; }
+  .hero-note svg { color: var(--ok); flex-shrink: 0; }
 
-  /* ---------- tables ---------- */
-  .tablewrap { overflow-x: auto; margin: 20px 0; border: 1px solid var(--line); border-radius: 12px; }
-  table { border-collapse: collapse; width: 100%; min-width: 640px; background: var(--card); font-size: 14.5px; }
-  th {
-    text-align: left; font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
-    color: var(--sub); padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--paper);
+  /* terminal demo */
+  .terminal {
+    background: var(--terminal-bg); color: var(--terminal-fg);
+    border-radius: 14px; box-shadow: var(--shadow);
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 13.5px; line-height: 1.75; overflow: hidden;
+    border: 1px solid var(--border);
   }
-  td { padding: 13px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  tr:last-child td { border-bottom: none; }
-  td.num { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
-  .tier { font-weight: 800; color: var(--teal-strong); }
+  .terminal-bar {
+    display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+    border-bottom: 1px solid rgba(148,163,184,.15);
+  }
+  .terminal-bar span { width: 11px; height: 11px; border-radius: 50%; background: #334155; }
+  .terminal-bar b { margin-left: 8px; font-weight: 600; font-size: 12px; color: #94A3B8; font-family: inherit; }
+  .terminal-body { padding: 18px 20px 22px; min-height: 320px; }
+  .t-line { display: flex; gap: 10px; opacity: 0; }
+  .t-line.show { opacity: 1; transition: opacity .3s; }
+  .t-prompt { color: #7DD3FC; flex-shrink: 0; }
+  .t-typed { color: #F1F5F9; word-break: break-all; }
+  .t-caret { display: inline-block; width: 8px; height: 16px; background: #7DD3FC; vertical-align: -2px; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .t-step { color: #94A3B8; padding-left: 2px; }
+  .t-step .ok { color: #4ADE80; font-weight: 700; }
+  .t-step .accent2 { color: #FBBF24; }
+  .t-files { color: #64748B; padding-left: 22px; }
+  .t-files i { color: #93C5FD; font-style: normal; }
+  @media (prefers-reduced-motion: reduce) {
+    .t-line { opacity: 1 !important; }
+    .t-caret { display: none; }
+  }
 
-  /* ---------- roadmap ---------- */
-  .roadmap { list-style: none; padding: 0; margin: 20px 0; border-left: 2px solid var(--line); }
-  .roadmap li { padding: 0 0 22px 24px; position: relative; margin: 0; }
-  .roadmap li::before {
-    content: ""; position: absolute; left: -7px; top: 7px;
-    width: 12px; height: 12px; border-radius: 50%;
-    background: var(--teal); border: 2px solid var(--paper);
+  /* pain */
+  .cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .cards3 { grid-template-columns: 1fr; } }
+  .pain-card, .path-card, .price-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px; box-shadow: var(--shadow);
   }
-  .roadmap .when {
-    font-size: 12.5px; font-weight: 800; color: var(--teal);
-    letter-spacing: .07em; text-transform: uppercase;
+  .pain-card .icon, .path-card .icon {
+    width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    background: var(--muted); color: var(--primary); margin-bottom: 18px;
   }
-  .roadmap .what { font-weight: 700; font-size: 16px; }
-  .roadmap p { font-size: 14.5px; color: var(--sub); margin: 2px 0 0; }
+  .pain-card h3, .path-card h3 { font-size: 18.5px; font-weight: 700; margin: 0 0 8px; }
+  .pain-card p, .path-card p { font-size: 15px; color: var(--sub); margin: 0; }
+  .pain-card blockquote {
+    margin: 14px 0 0; padding: 10px 14px; border-left: 3px solid var(--accent);
+    background: var(--muted); border-radius: 0 8px 8px 0;
+    font-size: 13.5px; color: var(--fg); font-style: italic;
+  }
 
-  /* ---------- footer ---------- */
-  footer { margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--sub); }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .cover h1, .cover .tagline { animation: rise .5s ease-out both; }
-    .cover .tagline { animation-delay: .08s; }
-    @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  /* path selection */
+  .path-card { position: relative; transition: transform .2s ease-out, border-color .2s; cursor: default; }
+  .path-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+  .path-card .tag {
+    position: absolute; top: 22px; right: 22px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--primary); background: var(--muted); padding: 4px 10px; border-radius: 999px;
   }
+  .path-card ul { margin: 14px 0 0; padding-left: 18px; font-size: 14.5px; color: var(--sub); }
+  .path-card li { margin-bottom: 6px; }
+  .path-card li b { color: var(--fg); }
+
+  /* pipeline */
+  .pipeline { counter-reset: step; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  @media (max-width: 1000px) { .pipeline { grid-template-columns: 1fr; } }
+  .pipe-step {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 18px; position: relative;
+  }
+  .pipe-step::before {
+    counter-increment: step; content: counter(step);
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--primary); color: var(--on-primary);
+    font-weight: 800; font-size: 14px; margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .pipe-step h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pipe-step p { font-size: 13.5px; color: var(--sub); margin: 0; }
+  .verify-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px; }
+  .vbadge {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 13px; font-weight: 700; color: var(--fg);
+    background: var(--card); border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 999px;
+  }
+  .vbadge svg { color: var(--ok); }
+
+  /* metrics */
+  .metrics { background: var(--terminal-bg); color: #E2E8F0; border-radius: 18px; padding: 52px 44px; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  @media (max-width: 820px) { .metrics-grid { grid-template-columns: 1fr; } }
+  .metric .num {
+    font-size: clamp(34px, 4.5vw, 48px); font-weight: 800;
+    color: #7DD3FC; font-variant-numeric: tabular-nums; line-height: 1.1;
+  }
+  .metric .label { font-size: 15px; font-weight: 700; margin-top: 6px; }
+  .metric .desc { font-size: 13.5px; color: #94A3B8; margin-top: 4px; }
+  .metrics .fine { font-size: 12px; color: #64748B; margin: 28px 0 0; }
+
+  /* pricing */
+  .price-card { display: flex; flex-direction: column; }
+  .price-card.featured { border: 2px solid var(--primary); position: relative; }
+  .price-card.featured .pop {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--primary); color: var(--on-primary);
+    font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 999px; white-space: nowrap;
+  }
+  .price-card h3 { font-size: 20px; font-weight: 800; margin: 0 0 4px; }
+  .price-card .for { font-size: 13.5px; color: var(--sub); margin-bottom: 18px; }
+  .price-card .amount { font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .price-card .amount small { font-size: 14px; font-weight: 600; color: var(--sub); }
+  .price-card .sub-amount { font-size: 13.5px; color: var(--sub); margin-bottom: 20px; }
+  .price-card ul { margin: 0 0 24px; padding-left: 0; list-style: none; font-size: 14.5px; }
+  .price-card li { display: flex; gap: 9px; margin-bottom: 9px; align-items: flex-start; }
+  .price-card li svg { color: var(--ok); flex-shrink: 0; margin-top: 4px; }
+  .price-card .btn { margin-top: auto; justify-content: center; }
+  .price-note { text-align: center; font-size: 13px; color: var(--sub); margin-top: 24px; }
+
+  /* CTA */
+  .cta-final { text-align: center; padding: 96px 0; }
+  .cta-final h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; margin: 0 0 16px; }
+  .cta-final p { color: var(--sub); font-size: 17px; max-width: 36em; margin: 0 auto 36px; }
+  .cta-final .btn { font-size: 17px; padding: 16px 34px; }
+  .cta-final .slots { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-size: 14px; font-weight: 600; color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 36px 0; font-size: 13.5px; color: var(--sub); }
+  .footer-inner { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  footer a { color: var(--sub); }
+  footer a:hover { color: var(--fg); }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-
-  <div class="cover">
-    <div class="doc-meta">
-      <span><strong>기획서 (안)</strong></span>
-      <span>버전 0.2</span>
-      <span>2026. 07. 21</span>
-      <span>기술연구소</span>
+<nav>
+  <div class="container nav-inner">
+    <a class="logo" href="#">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>
+      FirmGen
+    </a>
+    <div class="nav-links">
+      <a href="#pain">왜 필요한가</a>
+      <a href="#solution">누구를 위한 것인가</a>
+      <a href="#how">작동 방식</a>
+      <a href="#pricing">가격</a>
+      <a href="plan.html">사업 기획서</a>
     </div>
-    <h1>FirmGen<span class="accent">.</span><br>프롬프트로 만드는 임베디드 펌웨어,<br>온프레미스로 파는 사업</h1>
-    <p class="tagline">웹에서 품질을 증명하고, 코드를 외부로 내보낼 수 없는 팀에게 사내 구축형 AI 펌웨어 개발 시스템을 판매한다.</p>
-    <dl class="facts">
-      <div><dt>제품 형태</dt><dd>웹 쇼케이스 + 온프레미스 구축</dd></div>
-      <div><dt>주 타깃</dt><dd>제조사 임베디드팀 · IoT 스타트업/SI</dd></div>
-      <div><dt>수익 모델</dt><dd>구축비 일시금 + 연간 구독</dd></div>
-      <div><dt>첫 지원 플랫폼</dt><dd>STM32 (CubeH5 계열)</dd></div>
-    </dl>
+    <a class="btn btn-accent" href="#pilot">파일럿 신청</a>
   </div>
+</nav>
 
-  <section>
-    <div class="eyebrow"><span class="no">01</span><span class="rule"></span></div>
-    <h2>요약</h2>
-    <p class="lead">FirmGen은 자연어로 요구사항을 넣으면 STM32 펌웨어 <span class="hl">프로젝트를 자동 개발</span>해 주는 플랫폼이다. 코드 조각 생성기가 아니다 — 요구사항 명세부터 핀 설계, 프로젝트 생성, 동작 검증까지를 시스템이 맡는다. 웹으로 품질을 증명하고, <span class="hl">실제 매출은 온프레미스 구축 + 연간 구독</span>에서 만든다.</p>
-    <ul>
-      <li><strong>요구사항 → 자동 개발</strong> — "이 센서로 이걸 하고 싶다"를 넣으면 핀 설계·프로젝트 구조·코드·테스트까지 생성. 수정도 명세 수정으로.</li>
-      <li><strong>FW 인력 리스크 보완</strong> — FW 비전공인 HW 엔지니어도 펌웨어를 만들 수 있게. 1인 개발자 퇴사로 프로젝트가 드랍되는 문제를 지식 자산화로 해소.</li>
-      <li><strong>웹 (미끼이자 쇼케이스)</strong> — 회원가입 시 무료 생성 크레딧 제공. 상용 API(Claude) 기반이라 품질 최상.</li>
-      <li><strong>온프레미스 (본 수익원)</strong> — 오픈 모델 + 임베디드 특화 RAG를 고객 망 내에 구축. 소스코드 외부 유출 0.</li>
-      <li><strong>가격 구조</strong> — 하드웨어 스펙(=모델 크기=품질)에 따라 3개 티어. 데모와의 품질 격차를 숨기지 않고 업셀 논리로 쓴다.</li>
-    </ul>
-  </section>
-
-  <section>
-    <div class="eyebrow"><span class="no">02</span><span class="rule"></span></div>
-    <h2>배경과 기회</h2>
-    <p>Copilot·Claude 등 코드 생성 AI는 웹/앱 개발에선 표준이 됐지만, 임베디드 펌웨어는 사각지대다.</p>
-    <ul>
-      <li><strong>보안 규정이 클라우드 AI를 막는다</strong> — 가전·산업장비·자동차 부품 제조사는 펌웨어 소스의 외부 전송 자체가 금지인 경우가 많다. 쓰고 싶어도 못 쓴다. → 온프레미스가 유일한 답.</li>
-      <li><strong>범용 LLM은 임베디드에 약하다</strong> — HAL API 버전 혼동, 존재하지 않는 레지스터, 핀맵 오류. 데이터시트·레퍼런스 매뉴얼·에라타를 근거로 대는 RAG 없이는 실무 투입이 어렵다.</li>
-      <li><strong>임베디드 개발자 부족</strong> — 국내 제조사 공통 문제. 시니어 1명 지식을 팀 전체가 쓰게 만드는 도구에 지불 의사가 있다.</li>
-      <li><strong>FW는 1인 개발이 흔하다</strong> — 그 1명이 퇴사하면 프로젝트가 드랍되거나 수정 불능이 된다. 지식이 사람에게만 있고 시스템에는 없다.</li>
-      <li><strong>FW가 전체 일정의 병목이다</strong> — 초기 설계부터 HW·FW가 핀 할당을 협의해야 하고("이 핀은 꼭 이 용도로"), HW가 먼저 끝나도 FW가 안 나오면 제품 전체가 멈춘다.</li>
-    </ul>
-    <div class="callout">
-      <p><strong>차별화 핵심:</strong> 모델이 아니라 <strong>임베디드 특화 RAG 파이프라인</strong>이 자산이다. HAL 문서·CubeH5 예제·데이터시트·보드 핀맵 인덱스, 그리고 생성 코드를 arm-gcc로 실제 컴파일해 통과시키는 검증 루프. 모델은 갈아끼워도 이 파이프라인은 남는다.</p>
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">On-Premise AI Firmware Development</span>
+      <h1>요구사항을 넣으면,<br><span class="u">검증된 펌웨어</span>가 나옵니다</h1>
+      <p class="lede">"온도센서 2개, 임계치 넘으면 릴레이 차단" — 이 한 줄이면 핀 설계부터 STM32 프로젝트 생성, 시뮬레이션 검증까지. 사내망 안에서, 소스코드 유출 없이.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-accent" href="#pilot">파일럿 프로그램 신청</a>
+        <a class="btn btn-ghost" href="#how">작동 방식 보기</a>
+      </div>
+      <p class="hero-note">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        100% 온프레미스 — 코드가 회사 밖으로 나가지 않습니다
+      </p>
     </div>
-  </section>
-
-  <section>
-    <div class="eyebrow"><span class="no">03</span><span class="rule"></span></div>
-    <h2>사업 구조 — 하나의 퍼널</h2>
-    <div class="funnel">
-      <div class="step">
-        <span class="badge">유입</span>
-        <div><div class="t">웹사이트 방문 → 회원가입</div><p>가입 즉시 무료 생성 크레딧 지급 (월 30회, 안). 프롬프트 → STM32 펌웨어 코드 체험.</p></div>
-      </div>
-      <div class="arrow">▼</div>
-      <div class="step">
-        <span class="badge">체험</span>
-        <div><div class="t">품질 확인</div><p>상용 API 기반이라 생성 품질 최상. "이게 되네" 경험이 영업의 전부. 크레딧 소진 후 소액 충전(어뷰징 방지 + 진성 리드 필터).</p></div>
-      </div>
-      <div class="arrow">▼</div>
-      <div class="step">
-        <span class="badge">전환</span>
-        <div><div class="t">"우리 코드는 외부로 못 나가는데, 사내 구축 되나요?"</div><p>사이트 내 구축 문의 폼. 보안 규정에 막힌 팀이 스스로 손을 든다.</p></div>
-      </div>
-      <div class="arrow">▼</div>
-      <div class="step money">
-        <span class="badge">매출</span>
-        <div><div class="t">온프레미스 구축 + 연간 구독</div><p>고객 망 내 서버에 오픈 모델 + RAG 스택 설치. 팀 규모·요구 품질에 따라 하드웨어 티어 선택.</p></div>
+    <div class="terminal" aria-label="FirmGen 동작 데모: 요구사항 입력부터 검증 통과까지">
+      <div class="terminal-bar"><span></span><span></span><span></span><b>firmgen — STM32H563</b></div>
+      <div class="terminal-body" id="demo">
+        <div class="t-line" data-d="0"><span class="t-prompt">요구사항&gt;</span><span class="t-typed" id="typed"></span><span class="t-caret" id="caret"></span></div>
+        <div class="t-line" data-d="3400"><span class="t-step">▸ 명세 확정 <span class="ok">✓</span> &nbsp;ADC 2ch · GPIO 릴레이 · 임계치 인터럽트</span></div>
+        <div class="t-line" data-d="4300"><span class="t-step">▸ 핀 할당 <span class="ok">✓</span> &nbsp;PA0/PA1(ADC1) · PB5(RELAY) <span class="accent2">— HW 고정핀 제약 반영</span></span></div>
+        <div class="t-line" data-d="5300"><span class="t-step">▸ 프로젝트 생성 <span class="ok">✓</span></span></div>
+        <div class="t-line" data-d="5800"><span class="t-files">├─ Core/Src/<i>main.c</i> · <i>adc_monitor.c</i> · <i>relay_ctrl.c</i></span></div>
+        <div class="t-line" data-d="6200"><span class="t-files">├─ <i>firmgen.ioc</i> · <i>Makefile</i> · tests/<i>test_threshold.c</i></span></div>
+        <div class="t-line" data-d="6900"><span class="t-step">▸ 컴파일 (arm-none-eabi-gcc) <span class="ok">PASS</span></span></div>
+        <div class="t-line" data-d="7600"><span class="t-step">▸ 정적분석 (MISRA-C) <span class="ok">PASS</span> &nbsp;위반 0건</span></div>
+        <div class="t-line" data-d="8300"><span class="t-step">▸ 유닛테스트 12/12 <span class="ok">PASS</span></span></div>
+        <div class="t-line" data-d="9000"><span class="t-step">▸ Renode 시뮬레이션 <span class="ok">PASS</span> &nbsp;임계치 차단 시나리오 검증</span></div>
+        <div class="t-line" data-d="9900"><span class="t-step" style="color:#4ADE80; font-weight:700;">✔ 동작 검증 완료 — 프로젝트 내보내기 준비됨 (28초)</span></div>
       </div>
     </div>
-  </section>
+  </div>
+</header>
 
-  <section>
-    <div class="eyebrow"><span class="no">04</span><span class="rule"></span></div>
-    <h2>기술 아키텍처</h2>
-    <h3>하이브리드 모델 전략</h3>
-    <ul>
-      <li><strong>웹</strong> — Claude 등 상용 API. 인프라 투자 없이 최고 품질로 쇼케이스.</li>
-      <li><strong>온프레미스</strong> — Qwen3-Coder / DeepSeek 계열 오픈 모델 + RAG. 하드웨어 티어가 곧 모델 크기.</li>
-      <li><strong>품질 격차의 처리</strong> — "상위 티어일수록 데모 품질에 근접"으로 정면 표기. 격차를 숨기면 클레임, 가격표로 만들면 업셀.</li>
-    </ul>
-    <h3>요구사항 → 프로젝트 자동 개발 파이프라인</h3>
-    <ul>
-      <li><strong>① 대화형 요구사항 명세</strong> — "온도센서 2개 읽어서 임계치 넘으면 릴레이 차단"처럼 쓰면 시스템이 되물어 명세를 완성. 명세가 프로젝트의 원본이 된다.</li>
-      <li><strong>② 핀·주변장치 설계</strong> — 핀 어시스턴트(아래)가 MCU 핀 할당·주변장치 구성 확정. CubeMX 호환 설정(.ioc) 출력.</li>
-      <li><strong>③ 프로젝트 생성</strong> — 스니펫이 아니라 빌드 가능한 프로젝트 전체(드라이버·태스크 구조·빌드 스크립트) 생성.</li>
-      <li><strong>④ 다층 검증</strong> — 컴파일은 최소선일 뿐. 컴파일 게이트 → 정적분석(MISRA-C) → 자동 생성 유닛테스트 → Renode 시뮬레이션 동작 검증 → (상위 티어) 실보드 HIL. <span class="hl">"동작이 검증된 펌웨어만 내보낸다"</span>가 제품 보증.</li>
-      <li><strong>⑤ 수정도 명세로</strong> — 코드 직접 수정 대신 명세 변경 → 재생성. 변경 이력이 명세 단위로 남는다.</li>
-    </ul>
-    <h3>핀 어시스턴트 — HW·FW 협업 자동화</h3>
-    <p>초기 설계에서 HW·FW가 하던 핀 협의를 시스템이 대신한다. 데이터시트의 핀 대체기능(AF) 표를 인덱싱해 두고:</p>
-    <ul>
-      <li>HW 엔지니어가 회로 구상·고정 핀 제약("이 핀은 꼭 릴레이 구동에")을 입력 → 충돌 검사 → 핀 할당표 확정.</li>
-      <li>핀맵이 확정되는 순간 FW 뼈대가 즉시 생성 → <strong>HW가 끝났는데 FW를 기다리는 직렬 병목 제거.</strong></li>
-      <li>FW 비전공 HW 엔지니어가 이 흐름만으로 동작 펌웨어까지 도달하는 것이 목표 페르소나.</li>
-    </ul>
-    <h3>지식 자산화 — 1인 개발 리스크 해소</h3>
-    <ul>
-      <li>프로젝트 = 코드가 아니라 <strong>명세 + 설계 결정 + 핀맵 + 테스트</strong>의 저장소. 담당자가 퇴사해도 명세에서 재생성·수정 가능.</li>
-      <li>"퇴사 보험"은 그 자체로 영업 포인트이자 연간 구독 유지 논리.</li>
-    </ul>
-    <h3>공통 기반 (웹·온프렘 동일)</h3>
-    <ul>
-      <li><strong>RAG 인덱스</strong> — STM32 HAL 드라이버 문서, CubeH5 예제 코드, 레퍼런스 매뉴얼(RM0481 등), 에라타, 데이터시트 핀 AF 표, Nucleo/Discovery 보드 핀맵.</li>
-      <li><strong>프로젝트 컨텍스트</strong> — 온프렘은 고객 사내 코드베이스를 추가 인덱싱(선택) → 사내 코딩 컨벤션·기존 드라이버를 반영한 생성. 클라우드가 절대 못 주는 가치.</li>
-    </ul>
-    <p class="muted">칩 지원 확대 = RAG 인덱스 추가 작업. 모델 재학습 불필요 → NXP·ESP32·Nordic으로 수평 확장 용이.</p>
-  </section>
-
-  <section>
-    <div class="eyebrow"><span class="no">05</span><span class="rule"></span></div>
-    <h2>가격 정책 (안)</h2>
-    <div class="tablewrap">
-      <table>
-        <thead>
-          <tr><th>티어</th><th>대상</th><th>하드웨어</th><th>모델급</th><th>구축비</th><th>연간 구독</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="tier">Lite</td>
-            <td>1~5인<br><span class="muted">스타트업·소규모 SI</span></td>
-            <td>NVIDIA DGX Spark ×2<br><span class="muted">128GB 통합메모리 ×2</span></td>
-            <td>~30B<br><span class="muted">Qwen3-Coder-30B급</span></td>
-            <td class="num">3,500만 원</td>
-            <td class="num">1,200만 원</td>
-          </tr>
-          <tr>
-            <td class="tier">Team</td>
-            <td>6~20인<br><span class="muted">중견 개발팀</span></td>
-            <td>DGX Station 또는<br>RTX PRO 6000 ×4 서버</td>
-            <td>70~80B<br><span class="muted">데모 품질 근접</span></td>
-            <td class="num">1억 2,000만 원</td>
-            <td class="num">3,600만 원</td>
-          </tr>
-          <tr>
-            <td class="tier">Enterprise</td>
-            <td>20인 이상<br><span class="muted">제조사 사업부</span></td>
-            <td>DGX B200/H200<br><span class="muted">8-GPU 노드</span></td>
-            <td>200B+ MoE<br><span class="muted">데모 동급</span></td>
-            <td class="num">4억 원~</td>
-            <td class="num">구축비의 25% (협의)</td>
-          </tr>
-        </tbody>
-      </table>
+<section id="pain">
+  <div class="container">
+    <span class="eyebrow">The Problem</span>
+    <h2 class="section-title">펌웨어 개발, 이 세 가지가 발목 잡고 있지 않습니까</h2>
+    <p class="section-sub">국내 제조사 임베디드 현장에서 반복되는 구조적 문제입니다.</p>
+    <div class="cards3">
+      <div class="pain-card">
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="22" y2="13"/><line x1="22" y1="8" x2="17" y2="13"/></svg></div>
+        <h3>FW 개발자를 못 뽑는다</h3>
+        <p>임베디드 개발자 채용은 해가 갈수록 어려워지고, 연봉은 올라갑니다. 채용 공고 6개월째 비어있는 자리, 익숙하지 않으십니까.</p>
+        <blockquote>"HW 엔지니어는 있는데 FW를 짤 사람이 없어요."</blockquote>
+      </div>
+      <div class="pain-card">
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <h3>그 한 명이 나가면 끝</h3>
+        <p>펌웨어는 1인 개발이 관행입니다. 담당자가 퇴사하면 프로젝트가 드랍되거나, 아무도 못 고치는 블랙박스가 됩니다.</p>
+        <blockquote>"코드는 있는데 빌드가 안 돼요. 문서요? 없죠."</blockquote>
+      </div>
+      <div class="pain-card">
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <h3>HW는 끝났는데 FW를 기다린다</h3>
+        <p>회로는 완성됐지만 펌웨어가 안 나와서 제품 전체가 멈춥니다. 핀맵 협의부터 브링업까지, FW가 항상 일정의 병목입니다.</p>
+        <blockquote>"보드는 두 달 전에 나왔는데 아직 LED도 못 켰습니다."</blockquote>
+      </div>
     </div>
-    <ul>
-      <li><strong>구축비</strong> = 하드웨어 + 설치·튜닝 + 초기 RAG 인덱스 구축 + 사내 교육 1회. 하드웨어 원가에 SW/용역 마진 30~40%.</li>
-      <li><strong>연간 구독</strong> = 모델 업데이트(신규 오픈 모델 교체), RAG 인덱스 갱신(신규 칩·HAL 버전), 유지보수·기술지원. 구축비의 약 25~30% 선.</li>
-      <li><strong>웹 크레딧</strong> = 월 30회 무료(안), 초과분 소액 충전. 수익 목적 아님 — 리드 필터.</li>
-    </ul>
-    <div class="callout amber">
-      <p><strong>검증 필요:</strong> 위 금액은 2026년 GPU 시세 기반 초안. Lite 티어는 DGX Spark 실물 추론 성능(30B 4bit 동시 사용자 수) 벤치마크 후 확정해야 함. 미검증 상태로 견적 발행 금지.</p>
+  </div>
+</section>
+
+<section id="solution" style="background: var(--muted); border-block: 1px solid var(--border);">
+  <div class="container">
+    <span class="eyebrow">Who It's For</span>
+    <h2 class="section-title">당신이 누구든, 펌웨어를 만들 수 있게</h2>
+    <p class="section-sub">FirmGen은 코드 자동완성 도구가 아닙니다. 요구사항에서 검증된 프로젝트까지, 개발 과정 자체를 시스템이 수행합니다.</p>
+    <div class="cards3">
+      <div class="path-card">
+        <span class="tag">HW 엔지니어</span>
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9"/></svg></div>
+        <h3>FW 없이 FW를 만듭니다</h3>
+        <p>회로 구상과 고정 핀 제약만 입력하세요.</p>
+        <ul>
+          <li><b>핀 어시스턴트</b>가 데이터시트 기반으로 핀 할당·충돌 검사</li>
+          <li>핀맵 확정 즉시 <b>동작하는 FW 뼈대</b> 생성</li>
+          <li>FW 개발자 채용 없이 시제품 브링업까지</li>
+        </ul>
+      </div>
+      <div class="path-card">
+        <span class="tag">FW 개발자</span>
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <h3>지루한 80%를 넘기세요</h3>
+        <p>드라이버 초기화, 핀 설정, 보일러플레이트는 시스템에게.</p>
+        <ul>
+          <li>HAL 문서·에라타·레퍼런스 매뉴얼 <b>근거 기반 생성</b></li>
+          <li>사내 코드베이스 학습 — <b>우리 팀 컨벤션</b>대로</li>
+          <li>당신은 제어 로직과 최적화에만 집중</li>
+        </ul>
+      </div>
+      <div class="path-card">
+        <span class="tag">개발 리더</span>
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>퇴사가 두렵지 않아집니다</h3>
+        <p>프로젝트가 코드가 아니라 명세로 남습니다.</p>
+        <ul>
+          <li>요구사항·설계 결정·핀맵·테스트가 <b>자산으로 축적</b></li>
+          <li>담당자가 없어도 명세에서 <b>재생성·수정</b> 가능</li>
+          <li>온프레미스 — 소스코드 외부 유출 0</li>
+        </ul>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section>
-    <div class="eyebrow"><span class="no">06</span><span class="rule"></span></div>
-    <h2>로드맵</h2>
-    <ul class="roadmap">
-      <li>
-        <span class="when">1단계 · M1–M3</span>
-        <div class="what">웹 MVP</div>
-        <p>회원가입·크레딧·프롬프트→코드 생성(Claude API + STM32 RAG). 구축 문의 폼. 이 단계에서 바로 리드 수집 시작.</p>
-      </li>
-      <li>
-        <span class="when">2단계 · M4–M6</span>
-        <div class="what">검증 파이프라인 + 오픈 모델 PoC</div>
-        <p>컴파일 게이트 + 정적분석 + 자동 유닛테스트 + Renode 시뮬레이션. 핀 어시스턴트 프로토타입. Qwen3-Coder-30B를 DGX Spark에서 벤치마크 → Lite 티어 사양·가격 확정.</p>
-      </li>
-      <li>
-        <span class="when">3단계 · M7–M9</span>
-        <div class="what">온프레미스 패키지 v1</div>
-        <p>설치 자동화(오프라인 인스톤러), 관리 콘솔, 라이선스 서버. Lite 티어 판매 개시.</p>
-      </li>
-      <li>
-        <span class="when">4단계 · M10–M12</span>
-        <div class="what">첫 레퍼런스 구축 + 상위 티어</div>
-        <p>파일럿 고객 1곳 구축 사례화. Team/Enterprise 티어 오픈. 칩 지원 확대(ESP32 또는 NXP) 착수.</p>
-      </li>
-    </ul>
-  </section>
-
-  <section>
-    <div class="eyebrow"><span class="no">07</span><span class="rule"></span></div>
-    <h2>리스크와 대응</h2>
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th>리스크</th><th>내용</th><th>대응</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><strong>품질 격차 클레임</strong></td>
-            <td>웹 데모(상용 API)와 온프렘(오픈 모델) 품질 차이에 대한 고객 불만</td>
-            <td>격차를 티어표에 명시. 계약 전 고객 프롬프트로 온프렘 모델 실측 데모 제공</td>
-          </tr>
-          <tr>
-            <td><strong>오픈 모델 추격</strong></td>
-            <td>오픈 모델이 좋아질수록 고객이 직접 구축 시도</td>
-            <td>해자는 모델이 아닌 RAG 인덱스·검증 루프·유지보수. 구독으로 락인</td>
-          </tr>
-          <tr>
-            <td><strong>GPU 시세 변동</strong></td>
-            <td>하드웨어 원가 변동으로 견적 마진 훼손</td>
-            <td>견적 유효기간 30일 명시. HW는 발주 시점 시세 반영 조항</td>
-          </tr>
-          <tr>
-            <td><strong>생성 코드 책임</strong></td>
-            <td>생성 펌웨어 결함으로 인한 고객 제품 사고</td>
-            <td>계약서에 "개발 보조 도구, 최종 검증 책임은 고객" 명시. 안전 필수(functional safety) 용도 제외 조항</td>
-          </tr>
-        </tbody>
-      </table>
+<section id="how">
+  <div class="container">
+    <span class="eyebrow">How It Works</span>
+    <h2 class="section-title">"컴파일 되는 코드"가 아니라 "동작이 검증된 펌웨어"</h2>
+    <p class="section-sub">생성형 AI의 그럴듯한 코드를 그대로 내보내지 않습니다. 5단계 파이프라인의 검증 게이트를 전부 통과한 프로젝트만 손에 쥐어드립니다.</p>
+    <div class="pipeline">
+      <div class="pipe-step"><h3>요구사항 명세</h3><p>자연어로 쓰면 시스템이 되물어 명세 완성. 명세가 프로젝트의 원본.</p></div>
+      <div class="pipe-step"><h3>핀·주변장치 설계</h3><p>데이터시트 AF표 기반 핀 할당, HW 고정핀 제약 반영, CubeMX 호환 출력.</p></div>
+      <div class="pipe-step"><h3>프로젝트 생성</h3><p>스니펫이 아닌 빌드 가능한 전체 프로젝트 — 드라이버·태스크·빌드 스크립트.</p></div>
+      <div class="pipe-step"><h3>다층 검증</h3><p>컴파일 → MISRA-C 정적분석 → 유닛테스트 → 시뮬레이션 동작 검증.</p></div>
+      <div class="pipe-step"><h3>자산화</h3><p>수정은 명세 변경으로. 모든 결정이 기록되어 인수인계가 필요 없는 프로젝트.</p></div>
     </div>
-  </section>
+    <div class="verify-badges" aria-label="검증 단계">
+      <span class="vbadge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>arm-gcc 컴파일 게이트</span>
+      <span class="vbadge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>MISRA-C 정적분석</span>
+      <span class="vbadge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>자동 생성 유닛테스트</span>
+      <span class="vbadge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Renode 시뮬레이션</span>
+      <span class="vbadge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>실보드 HIL (Enterprise)</span>
+    </div>
+  </div>
+</section>
 
-  <section>
-    <div class="eyebrow"><span class="no">08</span><span class="rule"></span></div>
-    <h2>미결정 사항</h2>
-    <ul>
-      <li>서비스명 확정 (FirmGen은 가칭 — 상표 검색 필요)</li>
-      <li>Lite 티어 실측 벤치마크 (DGX Spark × 30B 모델 동시 사용자 수)</li>
-      <li>웹 무료 크레딧 횟수·충전 단가</li>
-      <li>파일럿 고객 후보 리스트업 (기존 네트워크 내 제조사 우선)</li>
-      <li>Renode 시뮬레이션 검증 지원 범위 (H5 계열 주변장치 커버리지 실사)</li>
-      <li>HW 엔지니어 대상 UX 검증 — FW 비전공자가 실제로 완주 가능한지 파일럿 인터뷰</li>
-    </ul>
-  </section>
+<section>
+  <div class="container">
+    <div class="metrics">
+      <div class="metrics-grid">
+        <div class="metric"><div class="num">10분</div><div class="label">요구사항 → 동작 FW 뼈대</div><div class="desc">기존: 핀맵 협의 회의부터 브링업까지 수 주</div></div>
+        <div class="metric"><div class="num">0건</div><div class="label">소스코드 외부 전송</div><div class="desc">전 과정이 사내망 GPU 서버에서 실행</div></div>
+        <div class="metric"><div class="num">100%</div><div class="label">명세·설계 문서화</div><div class="desc">모든 프로젝트가 인수인계 가능한 상태로 유지</div></div>
+      </div>
+      <p class="fine">* 파일럿 프로그램 목표 지표입니다. 실측 수치는 파일럿 완료 후 사례와 함께 공개합니다.</p>
+    </div>
+  </div>
+</section>
 
-  <footer>
-    FirmGen 사업 기획서 (안) · v0.2 · 2026-07-21 · 기술연구소 — 본 문서의 가격은 내부 검토용 초안이며 대외 견적으로 사용할 수 없음.
-  </footer>
+<section id="pricing" style="background: var(--muted); border-block: 1px solid var(--border);">
+  <div class="container">
+    <span class="eyebrow">Pricing</span>
+    <h2 class="section-title">팀 규모에 맞는 구축, 투명한 가격</h2>
+    <p class="section-sub">하드웨어 사양이 곧 모델 성능입니다. 상위 티어일수록 클라우드 데모 품질에 가까워집니다. 구축비에는 하드웨어·설치·초기 인덱스 구축·교육이 포함됩니다.</p>
+    <div class="cards3">
+      <div class="price-card">
+        <h3>Lite</h3>
+        <div class="for">1~5인 · 스타트업/소규모 SI</div>
+        <div class="amount">3,500만 원<small> 구축</small></div>
+        <div class="sub-amount">연간 구독 1,200만 원</div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>DGX Spark ×2 (30B급 모델)</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>컴파일 게이트 + 정적분석</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>STM32 전 계열 RAG 인덱스</li>
+        </ul>
+        <a class="btn btn-ghost" href="#pilot">상담 신청</a>
+      </div>
+      <div class="price-card featured">
+        <span class="pop">가장 많이 문의</span>
+        <h3>Team</h3>
+        <div class="for">6~20인 · 중견 개발팀</div>
+        <div class="amount">1억 2,000만 원<small> 구축</small></div>
+        <div class="sub-amount">연간 구독 3,600만 원</div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>DGX Station (70~80B급 모델)</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>+ Renode 시뮬레이션 검증</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>사내 코드베이스 인덱싱</li>
+        </ul>
+        <a class="btn btn-accent" href="#pilot">상담 신청</a>
+      </div>
+      <div class="price-card">
+        <h3>Enterprise</h3>
+        <div class="for">20인 이상 · 제조사 사업부</div>
+        <div class="amount">4억 원~<small> 구축</small></div>
+        <div class="sub-amount">연간 구독 협의 (구축비의 25%)</div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>DGX B200/H200 (200B+ MoE)</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>+ 실보드 HIL 자동 테스트</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>전담 기술지원 · 커스텀 칩 인덱스</li>
+        </ul>
+        <a class="btn btn-ghost" href="#pilot">상담 신청</a>
+      </div>
+    </div>
+    <p class="price-note">구독에는 모델 업데이트, 신규 칩·HAL 버전 인덱스 갱신, 유지보수가 포함됩니다. 가격은 파일럿 기간 중 확정 예정입니다.</p>
+  </div>
+</section>
 
-</div>
+<section class="cta-final" id="pilot">
+  <div class="container">
+    <span class="eyebrow">Pilot Program</span>
+    <h2>파일럿 파트너 3개 사를 모집합니다</h2>
+    <p>귀사의 실제 요구사항 하나를 골라 주세요. FirmGen이 검증된 펌웨어 프로젝트로 만들어 보이는 것까지가 파일럿입니다. 비용 없이, 결과로 판단하십시오.</p>
+    <a class="btn btn-accent" href="mailto:chuljin100@finger.co.kr?subject=[FirmGen] 파일럿 프로그램 신청">파일럿 신청하기</a>
+    <div class="slots">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      2026년 4분기 파일럿 — 선착순 3개 사 한정
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div>© 2026 FirmGen (가칭) · Finger Inc. 기술연구소</div>
+    <div><a href="plan.html">사업 기획서 v0.2</a> · <a href="mailto:chuljin100@finger.co.kr">문의</a></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var promptText = "온도센서 2개 읽어서 임계치 넘으면 릴레이 차단해줘";
+  var typed = document.getElementById("typed");
+  var caret = document.getElementById("caret");
+  var lines = document.querySelectorAll("#demo .t-line");
+
+  function runDemo() {
+    typed.textContent = "";
+    lines.forEach(function (l) { l.classList.remove("show"); });
+    lines[0].classList.add("show");
+    if (reduced) {
+      typed.textContent = promptText;
+      lines.forEach(function (l) { l.classList.add("show"); });
+      return;
+    }
+    var i = 0;
+    var typeTimer = setInterval(function () {
+      typed.textContent = promptText.slice(0, ++i);
+      if (i >= promptText.length) clearInterval(typeTimer);
+    }, 55);
+    lines.forEach(function (l) {
+      var d = parseInt(l.getAttribute("data-d"), 10);
+      if (d > 0) setTimeout(function () { l.classList.add("show"); }, d);
+    });
+    setTimeout(runDemo, 16000);
+  }
+
+  var started = false;
+  var io = new IntersectionObserver(function (entries) {
+    if (!started && entries[0].isIntersecting) { started = true; runDemo(); io.disconnect(); }
+  }, { threshold: 0.3 });
+  io.observe(document.getElementById("demo"));
+})();
+</script>
+
 </body>
 </html>
