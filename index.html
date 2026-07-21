@@ -253,6 +253,14 @@
   .footer-inner { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   footer a { color: var(--sub); }
   footer a:hover { color: var(--fg); }
+
+  /* stats band */
+  .stats-band { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--muted); padding: 40px 0; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
+  @media (max-width: 860px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stat-num { font-size: clamp(24px, 3vw, 34px); font-weight: 800; color: var(--primary-deep, var(--primary)); font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 13px; color: var(--sub); margin-top: 6px; line-height: 1.5; }
+  .stats-src { text-align: center; font-size: 11px; color: var(--sub); margin-top: 22px; opacity: .8; }
 </style>
 </head>
 <body>
@@ -331,6 +339,18 @@
     </div>
   </div>
 </header>
+
+<section class="stats-band">
+  <div class="container">
+    <div class="stats-grid">
+      <div><div class="stat-num">5.0%</div><div class="stat-label">임베디드SW 인력 부족률<br>— 주력산업 평균의 2배</div></div>
+      <div><div class="stat-num">연 7,008만 원</div><div class="stat-label">FW 개발자 1인<br>기업 부담 인건비</div></div>
+      <div><div class="stat-num">66%</div><div class="stat-label">범용 AI가 짠 임베디드 코드의<br>동작 성공률 — 검증이 필수인 이유</div></div>
+      <div><div class="stat-num">+26%</div><div class="stat-label">AI 도입 시 개발 작업 완료량<br>(개발자 4,867명 대조실험)</div></div>
+    </div>
+    <div class="stats-src">KESSIA 2024 실태조사 · KOSA 2026 SW기술자 평균임금 · ACM CHI 2024 · SSRN 4945566 (2024)</div>
+  </div>
+</section>
 
 <section id="pain">
   <div class="container">

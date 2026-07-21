@@ -94,6 +94,8 @@
   .tbl td.num { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
   .tier-name { font-weight: 800; color: var(--primary-deep); }
 
+  .src { font-size: 11px; color: var(--sub); margin-top: 20px; line-height: 1.7; }
+
   /* pricing cards on slide */
   .price h3 { font-size: 20px; }
   .price .amt { font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; font-variant-numeric: tabular-nums; margin: 2px 0; }
@@ -185,6 +187,22 @@
     <footer><span>FirmGen — Confidential</span><span class="no">02 / 11</span></footer>
   </section>
 
+  <!-- 2b. problem in numbers -->
+  <section class="slide">
+    <div class="slide-body">
+      <div class="eyebrow">Problem — Data</div>
+      <h2>숫자가 말하는 <span class="hl">채용난과 비용</span></h2>
+      <div class="g3" style="margin-top:24px">
+        <div class="card"><div class="big">5.0%</div><h3>임베디드SW 인력 부족률</h3><p>12대 주력산업 평균(2.2%)의 <b style="color:var(--fg)">2배 이상</b>. 기업 76%가 50인 미만 — 뽑을 사람도, 키울 여력도 없다.</p></div>
+        <div class="card"><div class="big">38.0%</div><h3>경력직 채용 애로 1위</h3><p>"요구 경력·기술을 갖춘 구직자가 없다." 신입도 30.7%가 같은 이유. <b style="color:var(--fg)">돈이 아니라 사람 자체가 없는 시장.</b></p></div>
+        <div class="card"><div class="big">연 7,008만 원</div><h3>FW 개발자 1인 기업 부담</h3><p>KOSA 2026 적용 시스템SW개발자(임베디드 포함) 평균임금 월 584만 원 — 상여·퇴직충당·4대보험 포함 실부담 기준.</p></div>
+      </div>
+      <p class="sub" style="margin-top:28px">그리고 이 인력이 감당하는 시장은 커진다 — 글로벌 임베디드 SW 시장 <b style="color:var(--fg)">2024년 $179억 → 2030년 $302억 (CAGR 9.5%)</b>.</p>
+      <p class="src">출처: KESSIA 「2024 임베디드SW산업 인력 실태조사」(뉴스웍스 보도) · KOSA 「2026년 적용 SW기술자 평균임금 공표」 · Grand View Research, Embedded Software Market Report</p>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">03 / 12</span></footer>
+  </section>
+
   <!-- 3. why now -->
   <section class="slide">
     <div class="slide-body">
@@ -198,6 +216,23 @@
       </div>
     </div>
     <footer><span>FirmGen — Confidential</span><span class="no">03 / 11</span></footer>
+  </section>
+
+  <!-- 3b. ai evidence -->
+  <section class="slide">
+    <div class="slide-body">
+      <div class="eyebrow">Why Now — Evidence</div>
+      <h2>AI 생산성은 실증됐다.<br>단, <span class="hl-a">범용 도구는 임베디드에서 멈춘다</span></h2>
+      <div class="g2" style="margin-top:24px">
+        <div class="card"><div class="big">55% 단축</div><p>GitHub Copilot 대조실험 — 동일 과제 완료 시간 1h11m vs 2h41m (개발자 95명, P=.0017).</p></div>
+        <div class="card"><div class="big">+26.1%</div><p>작업 완료량 증가 — Microsoft·Accenture·Fortune 100 3사 무작위 대조실험, 개발자 4,867명 (SSRN 2024).</p></div>
+        <div class="card"><div class="big" style="color:var(--accent)">&lt;10%</div><p>고복잡도 작업에선 향상 폭이 한 자릿수로 급감 (McKinsey 2023). <b style="color:var(--fg)">임베디드가 바로 그 영역이다.</b></p></div>
+        <div class="card"><div class="big" style="color:var(--accent)">66%</div><p>GPT-4가 생성한 I2C 센서 코드의 동작 성공률 (ACM CHI 2024, N=450). <b style="color:var(--fg)">3번 중 1번은 불량 — 검증 없이는 실무 투입 불가.</b></p></div>
+      </div>
+      <p class="sub" style="margin-top:28px">결론: 생산성 향상은 실재한다. 격차는 <b style="color:var(--fg)">도메인 특화 RAG + 자동 검증</b>에서 갈린다 — FirmGen의 설계 근거.</p>
+      <p class="src">출처: GitHub, "Quantifying GitHub Copilot's impact"(2022, RCT) · Cui et al., SSRN 4945566 (2024) · McKinsey, "Unleashing developer productivity with generative AI"(2023) · ACM CHI 2024, doi:10.1145/3613905.3650764</p>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">04 / 12</span></footer>
   </section>
 
   <!-- 4. solution -->
@@ -313,7 +348,8 @@
           <ul><li>DGX B200/H200 · 200B+ MoE</li><li>+ 실보드 HIL 자동 테스트</li><li>전담 지원 · 커스텀 칩</li></ul>
         </div>
       </div>
-      <p style="font-size:13px; color:var(--warn); font-weight:700; margin-top:20px">⚠ 2026년 GPU 시세 기반 초안 — Lite 티어는 DGX Spark 실측 벤치마크 후 확정. 미검증 견적 발행 금지.</p>
+      <p class="sub" style="margin-top:20px">ROI 기준점: FW 개발자 1인 연 기업부담 <b style="color:var(--fg)">7,008만 원</b>(KOSA 2026). Lite 1년차 총액 4,700만 원 — <b style="color:var(--fg)">채용 1명 못 하는 비용으로 팀 전체가 FW를 생산한다.</b></p>
+      <p style="font-size:13px; color:var(--warn); font-weight:700; margin-top:12px">⚠ 2026년 GPU 시세 기반 초안 — Lite 티어는 DGX Spark 실측 벤치마크 후 확정. 미검증 견적 발행 금지.</p>
     </div>
     <footer><span>FirmGen — Confidential</span><span class="no">08 / 11</span></footer>
   </section>
@@ -374,6 +410,11 @@
   var deck = document.getElementById("deck");
   var slides = deck.querySelectorAll(".slide");
   var bar = document.getElementById("bar");
+
+  for (var i = 0; i < slides.length; i++) {
+    var no = slides[i].querySelector("footer .no");
+    if (no) no.textContent = String(i + 1).padStart(2, "0") + " / " + String(slides.length).padStart(2, "0");
+  }
 
   function idx() { return Math.round(deck.scrollTop / window.innerHeight); }
   function go(i) {
