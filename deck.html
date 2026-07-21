@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FirmGen 사업 발표자료</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root {
+    --primary: #2563EB; --primary-deep: #1D4ED8;
+    --accent: #EA580C;
+    --bg: #F8FAFC; --fg: #1E293B; --sub: #64748B;
+    --muted: #E9EFF8; --border: #E2E8F0; --card: #FFFFFF;
+    --ink: #0F172A; --ink-fg: #E2E8F0; --ink-sub: #94A3B8;
+    --ok: #16A34A; --warn: #D97706;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--ink); color: var(--fg);
+    font-family: "Plus Jakarta Sans", "Pretendard Variable", Pretendard, -apple-system, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .deck { height: 100dvh; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+  .slide {
+    height: 100dvh; scroll-snap-align: start; scroll-snap-stop: always;
+    display: flex; flex-direction: column; position: relative;
+    background: var(--bg); overflow: hidden;
+  }
+  .slide-body {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    width: min(1120px, 92vw); margin: 0 auto; padding: 64px 0 88px;
+  }
+  .slide footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 32px; font-size: 12px; color: var(--sub);
+    font-weight: 600; letter-spacing: .05em;
+  }
+  .slide footer .no { font-variant-numeric: tabular-nums; }
+
+  .eyebrow {
+    font-size: clamp(12px, 1.2vw, 14px); font-weight: 800; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--primary); margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(34px, 5vw, 64px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; margin: 0; text-wrap: balance; }
+  h2 { font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.2; margin: 0 0 12px; text-wrap: balance; }
+  .sub { font-size: clamp(15px, 1.6vw, 19px); color: var(--sub); margin: 0 0 36px; max-width: 44em; }
+  .hl { color: var(--primary); }
+  .hl-a { color: var(--accent); }
+
+  /* dark slides */
+  .slide.dark { background: var(--ink); color: var(--ink-fg); }
+  .slide.dark .sub { color: var(--ink-sub); }
+  .slide.dark footer { color: var(--ink-sub); }
+  .slide.dark .eyebrow { color: #7DD3FC; }
+
+  /* grids & cards */
+  .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 860px) { .g3, .g2 { grid-template-columns: 1fr; } .slide { height: auto; min-height: 100dvh; } }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: clamp(18px, 2.2vw, 28px); box-shadow: 0 1px 3px rgba(15,23,42,.05), 0 8px 24px rgba(15,23,42,.06);
+  }
+  .card h3 { font-size: clamp(16px, 1.8vw, 20px); font-weight: 800; margin: 0 0 8px; }
+  .card p { font-size: clamp(13px, 1.4vw, 15px); color: var(--sub); margin: 0; line-height: 1.65; }
+  .card .big { font-size: clamp(26px, 3vw, 38px); font-weight: 800; color: var(--primary); line-height: 1.1; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+  .card blockquote {
+    margin: 12px 0 0; padding: 8px 12px; border-left: 3px solid var(--accent);
+    background: var(--muted); border-radius: 0 8px 8px 0;
+    font-size: 13px; color: var(--fg); font-style: italic;
+  }
+  .num-chip {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--primary); color: #fff; font-weight: 800; font-size: 14px;
+    margin-bottom: 12px; font-variant-numeric: tabular-nums;
+  }
+
+  /* flow arrows */
+  .flow { display: flex; align-items: stretch; gap: 10px; }
+  @media (max-width: 860px) { .flow { flex-direction: column; } .flow .arr { transform: rotate(90deg); align-self: center; } }
+  .flow .card { flex: 1; }
+  .flow .arr { display: flex; align-items: center; color: var(--primary); font-weight: 800; font-size: 20px; flex-shrink: 0; }
+
+  /* table */
+  .tbl { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(15,23,42,.05); font-size: clamp(13px, 1.4vw, 15px); }
+  .tbl th { text-align: left; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--sub); background: var(--muted); padding: 12px 16px; }
+  .tbl td { padding: 12px 16px; border-top: 1px solid var(--border); vertical-align: top; }
+  .tbl td.num { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+  .tier-name { font-weight: 800; color: var(--primary-deep); }
+
+  /* pricing cards on slide */
+  .price h3 { font-size: 20px; }
+  .price .amt { font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; font-variant-numeric: tabular-nums; margin: 2px 0; }
+  .price .amt small { font-size: 13px; color: var(--sub); font-weight: 600; }
+  .price .per { font-size: 13px; color: var(--sub); margin-bottom: 12px; }
+  .price ul { margin: 0; padding-left: 18px; font-size: 13.5px; color: var(--sub); }
+  .price li { margin-bottom: 5px; }
+  .price.feat { border: 2px solid var(--primary); }
+
+  /* roadmap */
+  .road { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  @media (max-width: 860px) { .road { grid-template-columns: 1fr; } }
+  .road .card { border-top: 4px solid var(--primary); }
+  .road .when { font-size: 12px; font-weight: 800; letter-spacing: .08em; color: var(--primary); text-transform: uppercase; margin-bottom: 6px; }
+
+  /* cover */
+  .cover-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 20px; margin-bottom: 48px; color: var(--ink-fg); }
+  .cover-brand svg { color: #7DD3FC; }
+  .cover-meta { display: flex; gap: 24px; margin-top: 48px; font-size: 14px; color: var(--ink-sub); font-weight: 600; }
+  .kbd-hint { margin-top: 64px; font-size: 13px; color: var(--ink-sub); }
+  .kbd-hint kbd {
+    display: inline-block; padding: 2px 8px; border: 1px solid #334155; border-bottom-width: 2px;
+    border-radius: 6px; font-family: inherit; font-size: 12px; margin: 0 2px; color: var(--ink-fg);
+  }
+
+  /* progress + nav */
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 50; transition: width .25s ease-out; }
+  .navbtns { position: fixed; right: 20px; bottom: 20px; display: flex; gap: 8px; z-index: 50; }
+  .navbtns button {
+    width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card); color: var(--fg); cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(15,23,42,.15); transition: transform .15s, border-color .15s;
+  }
+  .navbtns button:hover { transform: translateY(-2px); border-color: var(--primary); }
+  .navbtns button:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+  .badge-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+  .vb {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700;
+    background: var(--card); border: 1px solid var(--border); padding: 7px 13px; border-radius: 999px;
+  }
+  .vb::before { content: "✓"; color: var(--ok); font-weight: 800; }
+
+  .risk-tag { display: inline-block; font-size: 11.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--warn); background: #FEF3E2; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
+
+  @media (prefers-reduced-motion: reduce) { .deck { scroll-behavior: auto; } .progress { transition: none; } }
+  @media print {
+    .deck { height: auto; overflow: visible; }
+    .slide { height: 100vh; page-break-after: always; }
+    .navbtns, .progress { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="bar"></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1. cover -->
+  <section class="slide dark">
+    <div class="slide-body">
+      <div class="cover-brand">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>
+        FirmGen
+      </div>
+      <div class="eyebrow">사업 기획 발표 · v0.2</div>
+      <h1>요구사항을 넣으면,<br><span style="color:#7DD3FC">검증된 펌웨어</span>가 나옵니다</h1>
+      <p class="sub" style="margin-top:24px">프롬프트 기반 임베디드 펌웨어 자동 개발 플랫폼 — 온프레미스 구축 사업</p>
+      <div class="cover-meta"><span>2026. 07. 21</span><span>Finger Inc. 기술연구소</span></div>
+      <div class="kbd-hint"><kbd>←</kbd><kbd>→</kbd> 또는 스크롤로 넘기기</div>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">01 / 11</span></footer>
+  </section>
+
+  <!-- 2. problem -->
+  <section class="slide">
+    <div class="slide-body">
+      <div class="eyebrow">Problem</div>
+      <h2>펌웨어 개발의 구조적 문제 3가지</h2>
+      <p class="sub">국내 제조사 임베디드 현장 공통 — 현장 인터뷰에서 수집.</p>
+      <div class="g3">
+        <div class="card"><div class="num-chip">1</div><h3>FW 개발자를 못 뽑는다</h3><p>임베디드 채용난 심화. HW 엔지니어는 있지만 펌웨어 짤 사람이 없다.</p><blockquote>"채용 공고 6개월째 비어있어요."</blockquote></div>
+        <div class="card"><div class="num-chip">2</div><h3>그 한 명이 나가면 끝</h3><p>FW는 1인 개발 관행. 담당자 퇴사 = 프로젝트 드랍 또는 수정 불능 블랙박스.</p><blockquote>"코드는 있는데 빌드가 안 돼요."</blockquote></div>
+        <div class="card"><div class="num-chip">3</div><h3>FW가 일정의 병목</h3><p>핀맵 협의부터 브링업까지 HW가 끝나도 FW를 기다리며 제품 전체가 멈춘다.</p><blockquote>"보드 나온 지 두 달, 아직 LED도 못 켰어요."</blockquote></div>
+      </div>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">02 / 11</span></footer>
+  </section>
+
+  <!-- 3. why now -->
+  <section class="slide">
+    <div class="slide-body">
+      <div class="eyebrow">Why Now</div>
+      <h2>클라우드 AI가 <span class="hl">들어갈 수 없는</span> 시장</h2>
+      <p class="sub">코드 생성 AI는 웹 개발의 표준이 됐지만, 임베디드는 사각지대다.</p>
+      <div class="g3">
+        <div class="card"><div class="big">보안 규정</div><p>제조사 펌웨어는 소스 외부 전송 금지가 다수. Copilot을 쓰고 싶어도 못 쓴다. <b style="color:var(--fg)">온프레미스가 유일한 답.</b></p></div>
+        <div class="card"><div class="big">도메인 갭</div><p>범용 LLM은 HAL 버전 혼동, 없는 레지스터 생성, 핀맵 오류. 데이터시트 근거 RAG 없이는 실무 투입 불가.</p></div>
+        <div class="card"><div class="big">오픈모델 성숙</div><p>30B~200B급 오픈 코더 모델이 상용에 근접. 사내 GPU 서버로 충분한 품질 시점 도래.</p></div>
+      </div>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">03 / 11</span></footer>
+  </section>
+
+  <!-- 4. solution -->
+  <section class="slide dark">
+    <div class="slide-body">
+      <div class="eyebrow">Solution</div>
+      <h2 style="color:var(--ink-fg)">"컴파일 되는 코드"가 아니라<br><span style="color:#7DD3FC">"동작이 검증된 펌웨어"</span></h2>
+      <p class="sub">코드 자동완성 도구가 아니다. 요구사항에서 검증된 프로젝트까지 개발 과정 자체를 시스템이 수행한다.</p>
+      <div class="flow">
+        <div class="card"><h3>① 요구사항 명세</h3><p>자연어 입력 → 시스템이 되물어 명세 완성</p></div>
+        <span class="arr">→</span>
+        <div class="card"><h3>② 핀·주변장치 설계</h3><p>데이터시트 기반 핀 할당 · CubeMX 호환</p></div>
+        <span class="arr">→</span>
+        <div class="card"><h3>③ 프로젝트 생성</h3><p>빌드 가능한 전체 프로젝트</p></div>
+        <span class="arr">→</span>
+        <div class="card"><h3>④ 다층 검증</h3><p>컴파일 · MISRA · 테스트 · 시뮬레이션</p></div>
+        <span class="arr">→</span>
+        <div class="card"><h3>⑤ 자산화</h3><p>수정은 명세로 · 전 결정 기록</p></div>
+      </div>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">04 / 11</span></footer>
+  </section>
+
+  <!-- 5. key features -->
+  <section class="slide">
+    <div class="slide-body">
+      <div class="eyebrow">Key Features</div>
+      <h2>세 가지 차별화 — 경쟁자가 못 베끼는 부분</h2>
+      <div class="g3" style="margin-top:24px">
+        <div class="card">
+          <h3>핀 어시스턴트</h3>
+          <p>HW·FW가 회의로 하던 핀 협의를 시스템이 대신. HW 고정핀 제약 입력 → 충돌 검사 → 핀맵 확정 즉시 FW 뼈대 생성. <b style="color:var(--fg)">HW 엔지니어가 FW 없이 브링업까지.</b></p>
+        </div>
+        <div class="card">
+          <h3>검증 파이프라인</h3>
+          <p>생성 코드를 그대로 내보내지 않는다. 게이트 전부 통과한 프로젝트만 제공.</p>
+          <div class="badge-row"><span class="vb">arm-gcc</span><span class="vb">MISRA-C</span><span class="vb">유닛테스트</span><span class="vb">Renode 시뮬</span><span class="vb">HIL</span></div>
+        </div>
+        <div class="card">
+          <h3>지식 자산화</h3>
+          <p>프로젝트 = 명세+설계결정+핀맵+테스트 저장소. 담당자가 없어도 재생성·수정 가능. <b style="color:var(--fg)">"퇴사 보험" — 그 자체로 영업 포인트이자 구독 유지 논리.</b></p>
+        </div>
+      </div>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">05 / 11</span></footer>
+  </section>
+
+  <!-- 6. business model -->
+  <section class="slide">
+    <div class="slide-body">
+      <div class="eyebrow">Business Model</div>
+      <h2>웹으로 증명하고, <span class="hl">온프레미스로 번다</span></h2>
+      <p class="sub">하나의 퍼널 — 웹은 리드 수집 장치, 매출은 구축+구독.</p>
+      <div class="flow">
+        <div class="card"><h3>유입</h3><p>웹 가입 → 무료 크레딧으로 프롬프트→코드 체험</p></div>
+        <span class="arr">→</span>
+        <div class="card"><h3>체험</h3><p>상용 API 기반 최상 품질. "이게 되네" 경험이 영업의 전부</p></div>
+        <span class="arr">→</span>
+        <div class="card"><h3>전환</h3><p>"우리 코드는 외부로 못 나가는데 사내 구축 되나요?"</p></div>
+        <span class="arr">→</span>
+        <div class="card" style="border:2px solid var(--accent)"><h3 style="color:var(--accent)">매출</h3><p>온프레미스 구축비 + 연간 구독 (모델·인덱스 갱신, 유지보수)</p></div>
+      </div>
+      <p style="font-size:14px; color:var(--sub); margin-top:24px">데모(상용 API)와 온프렘(오픈모델) 품질 격차는 숨기지 않는다 — <b style="color:var(--fg)">"상위 하드웨어 티어일수록 데모 품질에 근접"</b>이라는 업셀 논리로 가격표에 반영.</p>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">06 / 11</span></footer>
+  </section>
+
+  <!-- 7. target -->
+  <section class="slide">
+    <div class="slide-body">
+      <div class="eyebrow">Target Market</div>
+      <h2>두 개의 타깃, 두 개의 단가</h2>
+      <div class="g2" style="margin-top:24px">
+        <div class="card">
+          <h3>제조사 임베디드팀</h3>
+          <p>가전·산업장비·자동차부품. 코드 반출 금지 규정 → <b style="color:var(--fg)">온프렘 수요 확실, 고단가.</b> Enterprise 티어 주력. HW 엔지니어의 FW 생산이 핵심 소구점.</p>
+        </div>
+        <div class="card">
+          <h3>IoT 스타트업 · 중소 SI</h3>
+          <p>1~10인 소규모 팀. 예산 작지만 수가 많다 → <b style="color:var(--fg)">Lite 티어 볼륨.</b> FW 개발자 채용 대체 효과가 소구점. 웹 체험에서 자연 유입.</p>
+        </div>
+      </div>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">07 / 11</span></footer>
+  </section>
+
+  <!-- 8. pricing -->
+  <section class="slide">
+    <div class="slide-body">
+      <div class="eyebrow">Pricing (안)</div>
+      <h2>하드웨어 = 모델 성능 = 가격</h2>
+      <div class="g3" style="margin-top:24px">
+        <div class="card price">
+          <h3>Lite</h3><div class="per">1~5인 · 스타트업/소규모 SI</div>
+          <div class="amt">3,500만 원 <small>구축</small></div>
+          <div class="per">+ 연간 구독 1,200만 원</div>
+          <ul><li>DGX Spark ×2 · 30B급</li><li>컴파일 + 정적분석</li><li>STM32 전 계열 인덱스</li></ul>
+        </div>
+        <div class="card price feat">
+          <h3>Team</h3><div class="per">6~20인 · 중견 개발팀</div>
+          <div class="amt">1억 2,000만 원 <small>구축</small></div>
+          <div class="per">+ 연간 구독 3,600만 원</div>
+          <ul><li>DGX Station · 70~80B급</li><li>+ Renode 시뮬레이션</li><li>사내 코드베이스 인덱싱</li></ul>
+        </div>
+        <div class="card price">
+          <h3>Enterprise</h3><div class="per">20인+ · 제조사 사업부</div>
+          <div class="amt">4억 원~ <small>구축</small></div>
+          <div class="per">+ 연간 구독 구축비의 25%</div>
+          <ul><li>DGX B200/H200 · 200B+ MoE</li><li>+ 실보드 HIL 자동 테스트</li><li>전담 지원 · 커스텀 칩</li></ul>
+        </div>
+      </div>
+      <p style="font-size:13px; color:var(--warn); font-weight:700; margin-top:20px">⚠ 2026년 GPU 시세 기반 초안 — Lite 티어는 DGX Spark 실측 벤치마크 후 확정. 미검증 견적 발행 금지.</p>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">08 / 11</span></footer>
+  </section>
+
+  <!-- 9. roadmap -->
+  <section class="slide">
+    <div class="slide-body">
+      <div class="eyebrow">Roadmap</div>
+      <h2>12개월, 4단계</h2>
+      <div class="road" style="margin-top:24px">
+        <div class="card"><div class="when">M1–M3</div><h3>웹 MVP</h3><p>가입·크레딧·생성(Claude API+RAG)·구축 문의 폼. 리드 수집 즉시 시작.</p></div>
+        <div class="card"><div class="when">M4–M6</div><h3>검증 파이프라인</h3><p>컴파일+정적분석+유닛테스트+시뮬레이션. 핀 어시스턴트 프로토타입. Lite 사양 확정.</p></div>
+        <div class="card"><div class="when">M7–M9</div><h3>온프렘 패키지 v1</h3><p>오프라인 인스톨러·관리 콘솔·라이선스 서버. Lite 판매 개시.</p></div>
+        <div class="card"><div class="when">M10–M12</div><h3>레퍼런스 + 확장</h3><p>파일럿 1곳 사례화. Team/Enterprise 오픈. ESP32/NXP 착수.</p></div>
+      </div>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">09 / 11</span></footer>
+  </section>
+
+  <!-- 10. risk -->
+  <section class="slide">
+    <div class="slide-body">
+      <div class="eyebrow">Risk & Mitigation</div>
+      <h2>리스크는 알고 시작한다</h2>
+      <div class="g2" style="margin-top:24px">
+        <div class="card"><span class="risk-tag">품질 격차</span><h3>데모 vs 온프렘 클레임</h3><p>격차를 티어표에 명시. 계약 전 고객 프롬프트로 온프렘 모델 실측 데모.</p></div>
+        <div class="card"><span class="risk-tag">경쟁</span><h3>오픈모델 발전 → 자체 구축 시도</h3><p>해자는 모델이 아니라 RAG 인덱스·검증 루프·유지보수. 구독으로 락인.</p></div>
+        <div class="card"><span class="risk-tag">원가</span><h3>GPU 시세 변동</h3><p>견적 유효기간 30일. HW는 발주 시점 시세 반영 조항.</p></div>
+        <div class="card"><span class="risk-tag">책임</span><h3>생성 코드 결함 사고</h3><p>"개발 보조 도구, 최종 검증 책임은 고객" 계약 명시. 기능안전 용도 제외.</p></div>
+      </div>
+    </div>
+    <footer><span>FirmGen — Confidential</span><span class="no">10 / 11</span></footer>
+  </section>
+
+  <!-- 11. ask -->
+  <section class="slide dark">
+    <div class="slide-body" style="text-align:center; align-items:center;">
+      <div class="eyebrow">Next Step</div>
+      <h2 style="color:var(--ink-fg)">파일럿 파트너 <span style="color:#FB923C">3개 사</span>로 시작합니다</h2>
+      <p class="sub" style="margin:16px auto 40px">고객의 실제 요구사항 하나 → 검증된 펌웨어 프로젝트로. 무상 파일럿, 결과로 판단받는다.<br>2026년 4분기 목표 — 지금 필요한 것: 파일럿 후보 리스트업 · DGX Spark 벤치마크 예산.</p>
+      <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+        <a href="index.html" style="display:inline-flex; padding:14px 28px; border-radius:10px; background:var(--accent); color:#fff; font-weight:800; text-decoration:none;">소개 페이지 보기</a>
+        <a href="plan.html" style="display:inline-flex; padding:14px 28px; border-radius:10px; border:1.5px solid #334155; color:var(--ink-fg); font-weight:800; text-decoration:none;">기획서 전문 보기</a>
+      </div>
+    </div>
+    <footer><span>FirmGen — Confidential · Finger Inc. 기술연구소</span><span class="no">11 / 11</span></footer>
+  </section>
+
+</div>
+
+<div class="navbtns">
+  <button id="prev" aria-label="이전 슬라이드">↑</button>
+  <button id="next" aria-label="다음 슬라이드">↓</button>
+</div>
+
+<script>
+(function () {
+  var deck = document.getElementById("deck");
+  var slides = deck.querySelectorAll(".slide");
+  var bar = document.getElementById("bar");
+
+  function idx() { return Math.round(deck.scrollTop / window.innerHeight); }
+  function go(i) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    slides[i].scrollIntoView({ behavior: "smooth" });
+  }
+  document.getElementById("prev").addEventListener("click", function () { go(idx() - 1); });
+  document.getElementById("next").addEventListener("click", function () { go(idx() + 1); });
+  document.addEventListener("keydown", function (e) {
+    if (["ArrowRight", "ArrowDown", "PageDown", " "].indexOf(e.key) > -1) { e.preventDefault(); go(idx() + 1); }
+    if (["ArrowLeft", "ArrowUp", "PageUp"].indexOf(e.key) > -1) { e.preventDefault(); go(idx() - 1); }
+    if (e.key === "Home") { e.preventDefault(); go(0); }
+    if (e.key === "End") { e.preventDefault(); go(slides.length - 1); }
+  });
+  deck.addEventListener("scroll", function () {
+    var p = deck.scrollTop / (deck.scrollHeight - window.innerHeight);
+    bar.style.width = (p * 100) + "%";
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>
