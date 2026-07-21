@@ -91,7 +91,29 @@
   @media (max-width: 820px) { .nav-links { display: none; } }
 
   /* hero */
-  .hero { padding: 88px 0 72px; }
+  .hero { padding: 88px 0 72px; position: relative; overflow: hidden; }
+  .hero .container { position: relative; z-index: 1; }
+  .circuit {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+  }
+  .circuit .trace { stroke: var(--primary); opacity: .12; fill: none; stroke-width: 1.5; }
+  .circuit .pad { fill: var(--primary); opacity: .2; }
+  .circuit .chip { fill: none; stroke: var(--primary); opacity: .15; stroke-width: 1.5; }
+  .circuit .pulse {
+    fill: none; stroke-width: 2.5; stroke-linecap: round; opacity: .5;
+    stroke-dasharray: 34 1400; stroke-dashoffset: 1434;
+    animation: flow 7s linear infinite;
+  }
+  .circuit .pulse.c1 { stroke: var(--primary); animation-duration: 6.5s; animation-delay: 0s; }
+  .circuit .pulse.c2 { stroke: var(--accent);  animation-duration: 8s;   animation-delay: -2.5s; }
+  .circuit .pulse.c3 { stroke: var(--ok);      animation-duration: 7s;   animation-delay: -4s; }
+  .circuit .pulse.c4 { stroke: var(--primary); animation-duration: 9s;   animation-delay: -1.5s; }
+  .circuit .pulse.c5 { stroke: var(--accent);  animation-duration: 7.5s; animation-delay: -5.5s; }
+  @keyframes flow { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .circuit .pulse { animation: none; opacity: 0; }
+  }
   .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
   @media (max-width: 960px) { .hero-grid { grid-template-columns: 1fr; } }
   .hero h1 { font-size: clamp(32px, 4.6vw, 50px); font-weight: 800; line-height: 1.16; margin: 0 0 20px; }
@@ -253,6 +275,30 @@
 </nav>
 
 <header class="hero">
+  <svg class="circuit" viewBox="0 0 1200 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <!-- MCU chip outline, top-center-left -->
+    <rect class="chip" x="520" y="30" width="88" height="88" rx="8"/>
+    <line class="chip" x1="538" y1="30" x2="538" y2="18"/><line class="chip" x1="564" y1="30" x2="564" y2="18"/><line class="chip" x1="590" y1="30" x2="590" y2="18"/>
+    <line class="chip" x1="538" y1="118" x2="538" y2="130"/><line class="chip" x1="564" y1="118" x2="564" y2="130"/><line class="chip" x1="590" y1="118" x2="590" y2="130"/>
+    <!-- traces -->
+    <path class="trace" id="tr1" d="M -20 90 H 300 V 210 H 470 V 74 H 520"/>
+    <path class="trace" id="tr2" d="M 1220 140 H 960 V 60 H 700 V 96 H 608"/>
+    <path class="trace" id="tr3" d="M -20 560 H 240 V 430 H 430 V 330 H 560 V 130"/>
+    <path class="trace" id="tr4" d="M 1220 540 H 1010 V 400 H 900 V 300 H 820"/>
+    <path class="trace" id="tr5" d="M 300 660 V 520 H 500 V 620 H 720 V 660"/>
+    <!-- pads / vias -->
+    <circle class="pad" cx="300" cy="210" r="4"/><circle class="pad" cx="470" cy="74" r="4"/>
+    <circle class="pad" cx="960" cy="60" r="4"/><circle class="pad" cx="700" cy="96" r="4"/>
+    <circle class="pad" cx="240" cy="430" r="4"/><circle class="pad" cx="430" cy="330" r="4"/>
+    <circle class="pad" cx="1010" cy="400" r="4"/><circle class="pad" cx="820" cy="300" r="5"/>
+    <circle class="pad" cx="500" cy="520" r="4"/>
+    <!-- signal pulses on same paths -->
+    <path class="pulse c1" d="M -20 90 H 300 V 210 H 470 V 74 H 520"/>
+    <path class="pulse c2" d="M 1220 140 H 960 V 60 H 700 V 96 H 608"/>
+    <path class="pulse c3" d="M -20 560 H 240 V 430 H 430 V 330 H 560 V 130"/>
+    <path class="pulse c4" d="M 1220 540 H 1010 V 400 H 900 V 300 H 820"/>
+    <path class="pulse c5" d="M 300 660 V 520 H 500 V 620 H 720 V 660"/>
+  </svg>
   <div class="container hero-grid">
     <div>
       <span class="eyebrow">On-Premise AI Firmware Development</span>
